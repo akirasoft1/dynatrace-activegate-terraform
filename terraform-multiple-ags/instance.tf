@@ -53,7 +53,7 @@ resource "aws_instance" "dynatraceactivegate" {
 	#specify a tag (optional) for the EC2 instance, we utilize email to tag our instance owners
 	tags {
     	  email = "${var.emailtag}"
-		  name = "pcfactivegate-${count.index}"
+		  Name = "pcfactivegate-${count.index}"
   	}
 	
 # The following block downloads and executes the Dynatrace ActiveGate installer
