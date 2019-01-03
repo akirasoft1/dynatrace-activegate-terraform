@@ -36,7 +36,7 @@ resource "aws_security_group" "terraformactivegate" {
 
 resource "aws_instance" "dynatraceactivegate" {
 
-	count = 2
+	count = "${length(var.DYNATRACE_DOWNLOAD_URLS)}"
 	
 	vpc_security_group_ids = ["${aws_security_group.terraformactivegate.id}"]
 	key_name = "${var.AWS_KEYPAIR_NAME}"
