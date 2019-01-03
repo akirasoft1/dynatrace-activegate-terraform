@@ -58,7 +58,7 @@ resource "aws_instance" "dynatraceactivegate" {
 #/var/lib/dynatrace/gateway/config	
 	provisioner "remote-exec" {
     		inline = [
-      			"sudo wget -O /tmp/activegate.sh ${var.DYNATRACE_DOWNLOAD_URL}",
+      			"sudo wget -O /tmp/activegate.sh \"${var.DYNATRACE_DOWNLOAD_URL}\"",
       			"cd /tmp/",
 				    "sudo /bin/sh /tmp/activegate.sh"
     		]
