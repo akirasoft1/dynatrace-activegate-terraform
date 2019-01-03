@@ -1,0 +1,6 @@
+### Terraform local vars file
+*.tfvars
+### OSX template
+.DS_Store
+.AppleDouble
+.LSOverride
