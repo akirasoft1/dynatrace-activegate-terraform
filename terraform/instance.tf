@@ -86,7 +86,7 @@ resource "aws_instance" "dynatraceactivegate" {
 # after moving custom config, we need to restart the AG	
 	provisioner "remote-exec" {
     		inline = [
-      			"sudo mv /tmp/custom.properties /var/lib/dynatrace/gateway/config/custom.properties && sudo chown dtuserag.dtuserag /var/lib/dynatrace/gateway/config/config.properties && sudo service dynatracegateway forcestop && sudo service dynatracegateway start"
+      			"sudo mv /tmp/custom.properties /var/lib/dynatrace/gateway/config/custom.properties && sudo chown dtuserag.dtuserag /var/lib/dynatrace/gateway/config/custom.properties && sudo service dynatracegateway forcestop && sudo service dynatracegateway start"
     		]
 	#the connection block defines the connection params to ssh into the newly created EC2 instance 
 			connection {
