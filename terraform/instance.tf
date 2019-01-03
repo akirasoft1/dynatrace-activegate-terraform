@@ -36,7 +36,7 @@ resource "aws_security_group" "terraformactivegate" {
 
 resource "aws_instance" "dynatraceactivegate" {
 	
-	vpc_security_group_ids = ["${aws_security_group.terraformsg.id}"]
+	vpc_security_group_ids = ["${aws_security_group.terraformactivegate.id}"]
 	key_name = "${var.AWS_KEYPAIR_NAME}"
 
 	#ami ID and instance type are defined in the vars file 
