@@ -75,6 +75,13 @@ resource "aws_instance" "dynatraceactivegate" {
  	provisioner "file" {
     source      = "conf/config.properties"
     destination = "/var/lib/dynatrace/gateway/config/config.properties"
+			connection {
+				type = "ssh"
+				user = "ubuntu"
+				private_key = "${var.AWS_PRIVATE_KEY}"
+				timeout = "3m"
+				agent = false
+			}
   }
 
 # after loading custom config, we need to restart the AG	
