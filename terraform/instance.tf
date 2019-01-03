@@ -58,9 +58,7 @@ resource "aws_instance" "dynatraceactivegate" {
 #/var/lib/dynatrace/gateway/config	
 	provisioner "remote-exec" {
     		inline = [
-      			"sudo wget -O /tmp/activegate.sh \"${var.DYNATRACE_DOWNLOAD_URL}\"",
-      			"cd /tmp/",
-				    "sudo /bin/sh /tmp/activegate.sh"
+      			"sudo wget -O /tmp/activegate.sh \"${var.DYNATRACE_DOWNLOAD_URL}\" && cd /tmp/ && sudo /bin/sh /tmp/activegate.sh"
     		]
 	#the connection block defines the connection params to ssh into the newly created EC2 instance 
 			connection {
@@ -87,8 +85,7 @@ resource "aws_instance" "dynatraceactivegate" {
 # after loading custom config, we need to restart the AG	
 	provisioner "remote-exec" {
     		inline = [
-      			"sudo service dynatracegateway forcestop",
-      			"sudo service dynatracegateway start"
+      			"sudo service dynatracegateway forcestop && sudo service dynatracegateway start"
     		]
 	#the connection block defines the connection params to ssh into the newly created EC2 instance 
 			connection {
