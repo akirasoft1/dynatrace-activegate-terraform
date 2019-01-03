@@ -33,6 +33,8 @@ variable "AWS_KEYPAIR_NAME" {}
 
 variable "AWS_PRIVATE_KEY" {}
 
+variable "emailtag" {}
+
 #specify the root volume size. default is 20GB
 variable "ROOT_VOLUME_SIZE" {
 default = 10
