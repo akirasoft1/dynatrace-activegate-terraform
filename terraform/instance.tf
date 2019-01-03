@@ -87,7 +87,7 @@ resource "aws_instance" "dynatraceactivegate" {
 			connection {
 				type = "ssh"
 				user = "ubuntu"
-				private_key = "${file(var.AWS_PRIVATE_KEY)}"
+				private_key = "${var.AWS_PRIVATE_KEY}"
 				timeout = "3m"
 				agent = false
 			}
