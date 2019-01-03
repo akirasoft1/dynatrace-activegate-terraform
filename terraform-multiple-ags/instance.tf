@@ -103,6 +103,6 @@ resource "aws_instance" "dynatraceactivegate" {
 }
 
 #a little trick to show the complete url with the public_dns of the created node
-output "public_ip_for_ssh" {
-  value = "${aws_instance.dynatraceactivegate.public_dns}"
+output "public_ips_for_ssh" {
+  value = "${aws_instance.dynatraceactivegate.*.public_dns}"
 }
