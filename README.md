@@ -6,7 +6,7 @@ A set of terraform files for deploying either one ActiveGate or multiple ActiveG
 
 ## How do I use it?
 
-Obviously you'll need to clone this repo. Then depending on if you are deploying a single ActiveGate or Multiple ActiveGates you will need to change into the appropriate directory:
+Obviously you'll need to clone this repo, then, depending on if you are deploying a single ActiveGate or Multiple ActiveGates, you will need to change into the appropriate directory:
 
 1. `cd` into the proper directory:
     - [terraform/](terraform/)
@@ -45,7 +45,7 @@ EOF
 - AWS_SECRET_KEY: **(required)** Your Amazon secret_key to deploy the ActiveGate(s)
 - DYNATRACE_DOWNLOAD_URL(S): **(required)** URL is obtained from the ActiveGate deployment page or created programmatically in the following format:
     - Dynatrace URL for saas tenants is https://<environmentid>.live.dynatrace.com/api/v1/deployment/installer/gateway/unix/latest?Api-Token=<API_TOKEN>&arch=x86&flavor=default
-    - Dynatrace URL for sprint tenents is https://<environmentid>.sprint.dynatracelabs.com/api/v1/deployment/installer/gateway/unix/latest?Api-Token=<API_TOKEN>&arch=x86&flavor=default
+    - Dynatrace URL for sprint tenants is https://<environmentid>.sprint.dynatracelabs.com/api/v1/deployment/installer/gateway/unix/latest?Api-Token=<API_TOKEN>&arch=x86&flavor=default
     - Dynatrace URL for Managed tenants is https://<YourDynatraceServerHost:Port>/e/<environmentID>/api/v1/deployment/installer/gateway/unix/latest?Api-Token=<API_TOKEN>&arch=x86&flavor=default
 - AWS_REGION: **(required)** AWS region where you'd like the ActiveGate(s) to run
 - AWS_KEYPAIR_NAME: **(required)** pre-existing keypair to use to ssh to the ActiveGate(s)
