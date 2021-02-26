@@ -6,3 +6,8 @@
 .LSOverride
 .terraform
 .terraform.lock.hcl
+.tfplan
+.tfstate
+*.tfplan
+*.tfstate*
+
