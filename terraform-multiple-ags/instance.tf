@@ -27,82 +27,88 @@ resource "aws_security_group" "terraformactivegate" {
   }
 
   egress {
-    from_port       = 0
-    to_port         = 0
-    protocol        = "-1"
-    cidr_blocks     = ["0.0.0.0/0"]
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 }
 
 resource "aws_instance" "dynatraceactivegate" {
+  count = length(var.DYNATRACE_DOWNLOAD_URLS)
 
-	count = "${length(var.DYNATRACE_DOWNLOAD_URLS)}"
-	
-	vpc_security_group_ids = ["${aws_security_group.terraformactivegate.id}"]
-	key_name = "${var.AWS_KEYPAIR_NAME}"
+  vpc_security_group_ids = [aws_security_group.terraformactivegate.id]
+  key_name               = var.AWS_KEYPAIR_NAME
 
-	#ami ID and instance type are defined in the vars file 
-  	ami = "${lookup(var.AMIS, var.AWS_REGION)}"
-  	instance_type = "${lookup(var.AWS_INSTANCE_TYPE, var.DYNATRACE_SIZING)}"
-	
-	#EC2 instance root volume size
-	root_block_device {
-        volume_size = "${var.ROOT_VOLUME_SIZE}"
-   	}
+  #ami ID and instance type are defined in the vars file 
+  ami           = var.AMIS[var.AWS_REGION]
+  instance_type = var.AWS_INSTANCE_TYPE[var.DYNATRACE_SIZING]
 
-	#specify a tag (optional) for the EC2 instance, we utilize email to tag our instance owners
-	tags {
-    	  email = "${var.emailtag}"
-		  Name = "pcfactivegate-${count.index}"
-  	}
-	
-# The following block downloads and executes the Dynatrace ActiveGate installer
-# and configures the ActiveGate to run the CloudFoundry plugin and not accept agent traffic
-# && must be used to ensure entire remote-exec block will fail if individual commands fail
-	provisioner "remote-exec" {
-    		inline = [
-      			"sudo wget -O /tmp/activegate.sh \"${element(var.DYNATRACE_DOWNLOAD_URLS, count.index)}\" && cd /tmp/ && sudo /bin/sh /tmp/activegate.sh"
-    		]
-	#the connection block defines the connection params to ssh into the newly created EC2 instance 
-			connection {
-				type = "ssh"
-				user = "ubuntu"
-				private_key = "${var.AWS_PRIVATE_KEY}"
-				timeout = "3m"
-				agent = false
-			}
-  	}
-# the below block loads the persistant custom config that enables the CF plugin and disables the AG handling agent traffic
-# must be put in /tmp because of permissions on /var/lib/dynatrace/gateway/config/
- 	provisioner "file" {
-    source      = "conf/custom.properties"
-    destination = "/tmp/custom.properties"
-			connection {
-				type = "ssh"
-				user = "ubuntu"
-				private_key = "${var.AWS_PRIVATE_KEY}"
-				timeout = "3m"
-				agent = false
-			}
+  #EC2 instance root volume size
+  root_block_device {
+    volume_size = var.ROOT_VOLUME_SIZE
   }
 
-# after moving custom config, we need to restart the AG	
-	provisioner "remote-exec" {
-    		inline = [
-      			"sudo mv /tmp/custom.properties /var/lib/dynatrace/gateway/config/custom.properties && sudo chown dtuserag.dtuserag /var/lib/dynatrace/gateway/config/custom.properties && sudo systemctl stop dynatracegateway && sudo systemctl start dynatracegateway"
-    		]
-	#the connection block defines the connection params to ssh into the newly created EC2 instance 
-			connection {
-				type = "ssh"
-				user = "ubuntu"
-				private_key = "${var.AWS_PRIVATE_KEY}"
-				timeout = "3m"
-				agent = false
-			}
-  	}	
+  #specify a tag (optional) for the EC2 instance, we utilize email to tag our instance owners
+  tags = {
+    email = var.emailtag
+    Name  = "pcfactivegate-${count.index}"
+  }
+
+  # The following block downloads and executes the Dynatrace ActiveGate installer
+  # and configures the ActiveGate to run the CloudFoundry plugin and not accept agent traffic
+  # && must be used to ensure entire remote-exec block will fail if individual commands fail
+  provisioner "remote-exec" {
+    inline = [
+      "sudo wget -O /tmp/activegate.sh \"${element(var.DYNATRACE_DOWNLOAD_URLS, count.index)}\" && cd /tmp/ && sudo /bin/sh /tmp/activegate.sh",
+    ]
+
+    #the connection block defines the connection params to ssh into the newly created EC2 instance 
+    connection {
+      host        = coalesce(self.public_ip, self.private_ip)
+      type        = "ssh"
+      user        = "ubuntu"
+      private_key = var.AWS_PRIVATE_KEY
+      timeout     = "3m"
+      agent       = false
+    }
+  }
+
+  # the below block loads the persistant custom config that enables the CF plugin and disables the AG handling agent traffic
+  # must be put in /tmp because of permissions on /var/lib/dynatrace/gateway/config/
+  provisioner "file" {
+    source      = "conf/custom.properties"
+    destination = "/tmp/custom.properties"
+    connection {
+      host        = coalesce(self.public_ip, self.private_ip)
+      type        = "ssh"
+      user        = "ubuntu"
+      private_key = var.AWS_PRIVATE_KEY
+      timeout     = "3m"
+      agent       = false
+    }
+  }
+
+  # after moving custom config, we need to restart the AG	
+  provisioner "remote-exec" {
+    inline = [
+      "sudo mv /tmp/custom.properties /var/lib/dynatrace/gateway/config/custom.properties && sudo chown dtuserag.dtuserag /var/lib/dynatrace/gateway/config/custom.properties && sudo systemctl stop dynatracegateway && sudo systemctl start dynatracegateway",
+    ]
+
+    #the connection block defines the connection params to ssh into the newly created EC2 instance 
+    connection {
+      host        = coalesce(self.public_ip, self.private_ip)
+      type        = "ssh"
+      user        = "ubuntu"
+      private_key = var.AWS_PRIVATE_KEY
+      timeout     = "3m"
+      agent       = false
+    }
+  }
 }
 
 #a little trick to show the complete url with the public_dns of the created node
 output "public_ips_for_ssh" {
-  value = "${aws_instance.dynatraceactivegate.*.public_dns}"
+  value = aws_instance.dynatraceactivegate.*.public_dns
 }
+
